@@ -1,0 +1,20 @@
+[
+  {
+    "index": 0,
+    "transactions": [],
+    "previousHash": "0",
+    "hash": "genesis"
+  },
+  {
+    "index": 1,
+    "transactions": [
+      {
+        "sender": "Marcus",
+        "receiver": "Redgi",
+        "amount": "800 PHP"
+      }
+    ],
+    "previousHash": "genesis",
+    "hash": "1-[{\"sender\":\"Marcus\",\"receiver\":\"Redgi\",\"amount\":\"800 PHP\"}]-genesis"
+  }
+]
