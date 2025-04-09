@@ -3,10 +3,10 @@ const Web3 = require("web3");
 const contractJson = require("./build/contracts/TransactionStorage.json");
 
 const web3 = new Web3("http://127.0.0.1:7545");
-const contractAddress = "<DEPLOYED_CONTRACT_ADDRESS>";
+const contractAddress = "0xBaE5D309A028445Ff4DBC32Ca4Ca8CDAE971806b"; //Pwede palitan
 const contract = new web3.eth.Contract(contractJson.abi, contractAddress);
 
-const sender = "<YOUR_GANACHE_ACCOUNT>";
+const sender = "0xA25CC872e254C60e1f2D589Ad364Cd7689aC8DD6"; //Pwede palitan
 
 async function storeTransaction(description, amount) {
   const receipt = await contract.methods
