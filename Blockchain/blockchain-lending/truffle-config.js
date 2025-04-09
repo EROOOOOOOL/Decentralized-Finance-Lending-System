@@ -6,9 +6,10 @@ module.exports = {
       network_id: "*",   // Matches any network ID
     },
   },
+
   compilers: {
     solc: {
-      version: "^0.8.0", // Ensure compatibility with Solidity 0.8.x
+      version: "^0.8.17", // Ensure compatibility with Solidity 0.8.x
     },
   },
 };
