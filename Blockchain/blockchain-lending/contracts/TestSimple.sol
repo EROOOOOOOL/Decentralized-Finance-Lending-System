@@ -2,5 +2,9 @@
 pragma solidity ^0.8.17;
 
 contract TestSimple {
-    uint public x = 5;
+    uint internal x;
+
+    constructor() {
+        x = 5;
+    }
 }

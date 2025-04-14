@@ -2,7 +2,7 @@ module.exports = {
   networks: {
     development: {
       host: "127.0.0.1", // Ganache host
-      port: 7545,        // Ganache port
+      port: 8545,        // Ganache port
       network_id: "*",   // Matches any network ID
     },
   },
