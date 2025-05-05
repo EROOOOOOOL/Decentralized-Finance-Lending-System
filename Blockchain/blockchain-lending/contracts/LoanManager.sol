@@ -71,9 +71,19 @@ contract LoanManager {
     }
 
     function getLoan(uint loanId) public view returns (
-        uint, address, address, uint, uint, string memory, string memory, LoanStatus
+        uint, address, address, uint, uint, string memory, string memory, uint8
     ) {
+        require(loanId < loans.length, "Loan ID does not exist");  // <- This is correct and safe
         Loan memory l = loans[loanId];
-        return (l.id, l.borrower, l.lender, l.amount, l.termDays, l.purpose, l.repaymentFrequency, l.status);
+        return (
+            l.id,
+            l.borrower,
+            l.lender,
+            l.amount,
+            l.termDays,
+            l.purpose,
+            l.repaymentFrequency,
+            uint8(l.status)
+        );
     }
 }

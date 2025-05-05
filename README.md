@@ -1,4 +1,4 @@
-In a Command Prompt, run Ganache CLI. The command is "ganache-cli" (all small letters)
+In a Command Prompt, run Ganache CLI. The command is "ganache-cli --port 8545 --networkId 5777" (all small letters)
 
 Whenever you are updating the contract, you need to always compile the files.
 From the root folder, remove the existing build folder by using the command "rmdir /s /q build".
