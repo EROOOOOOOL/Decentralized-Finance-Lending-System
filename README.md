@@ -6,3 +6,10 @@ Then run "truffle compile" to compile the contracts.
 Then run "truffle migrate --reset" to run the migration scripts for the contract.
 
 To interact with the contract directly, use Truffle Console. Use the command "truffle console" to launch Truffle Console.
+
+Try to create a transaction using these commands. Do it in order and per line. Do not do it in one line.
+
+const loanManager = await LoanManager.deployed();
+await loanManager.requestLoan(100, 30, "Business", "Monthly", { from: accounts[0] });
+const basic = await loanManager.getLoanBasic.call(0);
+const text = await loanManager.getLoanText.call(0);

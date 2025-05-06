@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 contract LoanManager {
-    uint public collateralAmount = 1000; // PHP equivalent
+    uint public collateralAmount = 1000; // Example collateral (PHP equivalent)
     uint public interestRate = 5; // 5%
 
     enum LoanStatus { Requested, Accepted, CollateralDeposited, Funded, Completed, Cancelled }
@@ -20,7 +20,6 @@ contract LoanManager {
 
     Loan[] public loans;
     uint public loanCount;
-    mapping(uint => bool) public collateralDeposited;
 
     event LoanRequested(uint loanId, address borrower);
     event LoanAccepted(uint loanId, address lender);
@@ -28,7 +27,13 @@ contract LoanManager {
     event LoanFunded(uint loanId, address lender);
     event LoanCompleted(uint loanId);
 
-    function requestLoan(uint amount, uint termDays, string memory purpose, string memory repaymentFrequency) public {
+    // Request a new loan
+    function requestLoan(
+        uint amount,
+        uint termDays,
+        string memory purpose,
+        string memory repaymentFrequency
+    ) public {
         loans.push(Loan({
             id: loanCount,
             borrower: msg.sender,
@@ -39,41 +44,56 @@ contract LoanManager {
             repaymentFrequency: repaymentFrequency,
             status: LoanStatus.Requested
         }));
+
         emit LoanRequested(loanCount, msg.sender);
         loanCount++;
     }
 
+    // Accept a loan request
     function acceptLoan(uint loanId) public {
-        require(loans[loanId].status == LoanStatus.Requested, "Loan not available");
+        require(loanId < loanCount, "Invalid loan ID");
+        require(loans[loanId].status == LoanStatus.Requested, "Loan is not available");
         loans[loanId].lender = msg.sender;
         loans[loanId].status = LoanStatus.Accepted;
+
         emit LoanAccepted(loanId, msg.sender);
     }
 
+    // Deposit collateral by borrower
     function depositCollateral(uint loanId) public payable {
-        require(msg.sender == loans[loanId].borrower, "Only borrower");
+        require(loanId < loanCount, "Invalid loan ID");
+        Loan storage loan = loans[loanId];
+        require(msg.sender == loan.borrower, "Only borrower can deposit collateral");
         require(msg.value >= collateralAmount, "Insufficient collateral");
-        loans[loanId].status = LoanStatus.CollateralDeposited;
+
+        loan.status = LoanStatus.CollateralDeposited;
         emit CollateralDeposited(loanId, msg.sender);
     }
 
+    // Fund the loan by lender
     function fundLoan(uint loanId) public payable {
-        require(msg.sender == loans[loanId].lender, "Only lender");
-        require(loans[loanId].status == LoanStatus.CollateralDeposited, "Collateral not yet deposited");
-        require(msg.value >= loans[loanId].amount, "Insufficient funds");
-        payable(loans[loanId].borrower).transfer(loans[loanId].amount);
-        loans[loanId].status = LoanStatus.Funded;
+        require(loanId < loanCount, "Invalid loan ID");
+        Loan storage loan = loans[loanId];
+        require(msg.sender == loan.lender, "Only lender can fund the loan");
+        require(loan.status == LoanStatus.CollateralDeposited, "Collateral not deposited");
+        require(msg.value >= loan.amount, "Insufficient funds");
+
+        payable(loan.borrower).transfer(loan.amount);
+        loan.status = LoanStatus.Funded;
+
         emit LoanFunded(loanId, msg.sender);
     }
 
+    // Get total loan count
     function getLoanCount() public view returns (uint) {
         return loanCount;
     }
 
-    function getLoan(uint loanId) public view returns (
-        uint, address, address, uint, uint, string memory, string memory, uint8
+    // Get numeric fields of loan
+    function getLoanBasic(uint loanId) public view returns (
+        uint, address, address, uint, uint, uint8
     ) {
-        require(loanId < loans.length, "Loan ID does not exist");  // <- This is correct and safe
+        require(loanId < loanCount, "Invalid loan ID");
         Loan memory l = loans[loanId];
         return (
             l.id,
@@ -81,9 +101,16 @@ contract LoanManager {
             l.lender,
             l.amount,
             l.termDays,
-            l.purpose,
-            l.repaymentFrequency,
             uint8(l.status)
         );
+    }
+
+    // Get string fields of loan
+    function getLoanText(uint loanId) public view returns (
+        string memory, string memory
+    ) {
+        require(loanId < loanCount, "Invalid loan ID");
+        Loan memory l = loans[loanId];
+        return (l.purpose, l.repaymentFrequency);
     }
 }
