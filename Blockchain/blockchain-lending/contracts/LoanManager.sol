@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 contract LoanManager {
-    uint public collateralAmount = 1000; // Example collateral (PHP equivalent)
+    uint public collateralAmount = 1000; // Example collateral
     uint public interestRate = 5; // 5%
 
     enum LoanStatus { Requested, Accepted, CollateralDeposited, Funded, Completed, Cancelled }
@@ -52,9 +52,11 @@ contract LoanManager {
     // Accept a loan request
     function acceptLoan(uint loanId) public {
         require(loanId < loanCount, "Invalid loan ID");
-        require(loans[loanId].status == LoanStatus.Requested, "Loan is not available");
-        loans[loanId].lender = msg.sender;
-        loans[loanId].status = LoanStatus.Accepted;
+        Loan storage loan = loans[loanId];
+        require(loan.status == LoanStatus.Requested, "Loan is not available");
+        
+        loan.lender = msg.sender;
+        loan.status = LoanStatus.Accepted;
 
         emit LoanAccepted(loanId, msg.sender);
     }
@@ -105,12 +107,15 @@ contract LoanManager {
         );
     }
 
-    // Get string fields of loan
+    // Get text fields of loan
     function getLoanText(uint loanId) public view returns (
         string memory, string memory
     ) {
         require(loanId < loanCount, "Invalid loan ID");
         Loan memory l = loans[loanId];
-        return (l.purpose, l.repaymentFrequency);
+        return (
+            l.purpose,
+            l.repaymentFrequency
+        );
     }
 }

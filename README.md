@@ -9,7 +9,12 @@ To interact with the contract directly, use Truffle Console. Use the command "tr
 
 Try to create a transaction using these commands. Do it in order and per line. Do not do it in one line.
 
+const accounts = await web3.eth.getAccounts();
 const loanManager = await LoanManager.deployed();
 await loanManager.requestLoan(100, 30, "Business", "Monthly", { from: accounts[0] });
-const basic = await loanManager.getLoanBasic.call(0);
-const text = await loanManager.getLoanText.call(0);
+
+const basic = await loanManager.getLoanBasic(0);
+console.log(basic);
+
+const text = await loanManager.getLoanText(0);
+console.log(text);
