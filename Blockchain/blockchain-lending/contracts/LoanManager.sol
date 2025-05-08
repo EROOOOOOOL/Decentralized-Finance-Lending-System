@@ -34,8 +34,14 @@ contract LoanManager {
         string memory purpose,
         string memory repaymentFrequency
     ) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(termDays > 0, "Term days must be greater than 0");
+        require(bytes(purpose).length > 0, "Purpose cannot be empty");
+        require(bytes(repaymentFrequency).length > 0, "Repayment frequency cannot be empty");
+
+        uint newLoanId = loanCount;
         loans.push(Loan({
-            id: loanCount,
+            id: newLoanId,
             borrower: msg.sender,
             lender: address(0),
             amount: amount,
@@ -45,7 +51,7 @@ contract LoanManager {
             status: LoanStatus.Requested
         }));
 
-        emit LoanRequested(loanCount, msg.sender);
+        emit LoanRequested(newLoanId, msg.sender);
         loanCount++;
     }
 
@@ -93,10 +99,15 @@ contract LoanManager {
 
     // Get numeric fields of loan
     function getLoanBasic(uint loanId) public view returns (
-        uint, address, address, uint, uint, uint8
+        uint id,
+        address borrower,
+        address lender,
+        uint amount,
+        uint termDays,
+        uint8 status
     ) {
         require(loanId < loanCount, "Invalid loan ID");
-        Loan memory l = loans[loanId];
+        Loan storage l = loans[loanId];
         return (
             l.id,
             l.borrower,
@@ -109,10 +120,11 @@ contract LoanManager {
 
     // Get text fields of loan
     function getLoanText(uint loanId) public view returns (
-        string memory, string memory
+        string memory purpose,
+        string memory repaymentFrequency
     ) {
         require(loanId < loanCount, "Invalid loan ID");
-        Loan memory l = loans[loanId];
+        Loan storage l = loans[loanId];
         return (
             l.purpose,
             l.repaymentFrequency

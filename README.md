@@ -18,3 +18,6 @@ console.log(basic);
 
 const text = await loanManager.getLoanText(0);
 console.log(text);
+
+For automated testing
+truffle test
