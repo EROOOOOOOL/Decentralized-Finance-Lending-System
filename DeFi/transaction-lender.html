@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lender Homepage</title>
+  <link rel="stylesheet" href="transaction-lender.css" />
+</head>
+<body>
+  <header>
+    <h1>Lender Homepage</h1>
+  </header>
+      <div class="back-button-container">
+        <a href="homepage.html" class="back-button">← Back to Homepage</a>
+      </div>
+  <main>
+    <h2>Select Loan</h2>
+
+    <div class="loan-grid">
+      <!-- Dummy borrower cards -->
+      <div class="loan-card">
+        <div class="profile-icon"></div>
+        <div class="loan-info">
+          <p><strong>Borrower ID No.:</strong> 0000000200</p>
+          <p><strong>Loan Amount:</strong> 1000 PHP-C</p>
+        </div>
+        <button class="details-btn">Details</button>
+      </div>
+
+      <div class="loan-card">
+        <div class="profile-icon"></div>
+        <div class="loan-info">
+          <p><strong>Borrower ID No.:</strong> 0000000201</p>
+          <p><strong>Loan Amount:</strong> 5000 PHP-C</p>
+        </div>
+        <button class="details-btn">Details</button>
+      </div>
+
+      <div class="loan-card">
+        <div class="profile-icon"></div>
+        <div class="loan-info">
+          <p><strong>Borrower ID No.:</strong> 0000000202</p>
+          <p><strong>Loan Amount:</strong> 500 PHP-C</p>
+        </div>
+        <button class="details-btn">Details</button>
+      </div>
+
+      <div class="loan-card">
+        <div class="profile-icon"></div>
+        <div class="loan-info">
+          <p><strong>Borrower ID No.:</strong> 0000000203</p>
+          <p><strong>Loan Amount:</strong> 150 PHP-C</p>
+        </div>
+        <button class="details-btn">Details</button>
+      </div>
+
+      <div class="loan-card">
+        <div class="profile-icon"></div>
+        <div class="loan-info">
+          <p><strong>Borrower ID No.:</strong> 0000000204</p>
+          <p><strong>Loan Amount:</strong> 1000 PHP-C</p>
+        </div>
+        <button class="details-btn">Details</button>
+      </div>
+
+      <div class="loan-card">
+        <div class="profile-icon"></div>
+        <div class="loan-info">
+          <p><strong>Borrower ID No.:</strong> 0000000205</p>
+          <p><strong>Loan Amount:</strong> 2000 PHP-C</p>
+        </div>
+        <button class="details-btn">Details</button>
+      </div>
+    </div>
+
+<div id="loanModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Loan Summary</h2>
+    <p><strong>Borrower ID:</strong> <span id="modal-borrower-id"></span></p>
+    <p><strong>Loan Amount:</strong> <span id="modal-loan-amount"></span></p>
+    <p><strong>Loan Term:</strong> <span id="modal-loan-term"></span></p>
+    <p><strong>Purpose:</strong> <span id="modal-loan-purpose"></span></p>
+    <p><strong>Interest Rate:</strong> <span id="modal-interest-rate"></span></p>
+    <button id="confirmBtn" class="confirm-btn">Confirm</button>
+  </div>
+</div>
+
+<div id="successModal" class="modal">
+  <div class="modal-content success">
+    <img src="assets/checkmark.png" alt="Success" class="checkmark-icon" />
+    <h2>Transaction Successful!</h2>
+    <p>You will be redirected shortly...</p>
+  </div>
+</div>
+
+  </main>
+  <script src="transaction-lender.js"></script>
+</body>
+</html>

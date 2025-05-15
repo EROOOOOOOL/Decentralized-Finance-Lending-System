@@ -1,0 +1,81 @@
+body {
+  font-family: sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 20px;
+}
+
+.tab-container {
+  display: flex;
+}
+
+.tab {
+  flex: 1;
+  padding: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #0cc29b;
+  border: none;
+  color: white;
+  transition: 0.3s;
+}
+
+.tab.active {
+  background-color: black;
+}
+
+.history-container {
+  background-color: white;
+  padding: 20px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.transaction {
+  background-color: #11b58a;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  border-bottom: 1px solid #0d9275;
+}
+
+.transaction:nth-child(even) {
+  background-color: #18cd97;
+}
+
+.transaction span:first-child {
+  font-weight: bold;
+}
+
+.date {
+  white-space: nowrap;
+}
+
+.hidden {
+  display: none;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.logout {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.create {
+  background-color: #108c6f;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}

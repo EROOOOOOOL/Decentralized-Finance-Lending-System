@@ -1,0 +1,238 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f8f8f8;
+    color: #222;
+  }
+  
+  header {
+    background-color: #16c79a;
+    padding: 1rem 2rem;
+  }
+  
+  header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+  }
+  
+  main {
+    padding: 2rem;
+    overflow-y: auto;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #16c79a;
+    text-decoration: underline;
+  }
+  
+  form {
+    margin-top: 1rem;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  input, select {
+    padding: 0.5rem;
+    border: 2px solid #16c79a;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+  }
+  
+  .interest-label {
+    margin-top: auto;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  hr {
+    margin: 2rem 0 1rem;
+    border: none;
+    border-top: 2px solid #333;
+  }
+  
+  .acknowledgment h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .checkboxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .checkboxes label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-weight: normal;
+  }
+  
+  input[type="checkbox"] {
+    transform: scale(1.5);
+    margin-top: 0.2rem;
+  }
+  
+  .submit-wrapper {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  button {
+    background-color: black;
+    color: #16c79a;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #16c79a;
+    color: black;
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 30px;
+    width: 350px;
+    border-radius: 8px;
+    text-align: center;
+    font-family: sans-serif;
+  }
+  
+  .modal-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 0.95rem;
+  }
+  
+  .confirm-container {
+    margin-top: 20px;
+  }
+  
+  .confirm-btn {
+    padding: 8px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 9999;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .confirm-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .interest-rate {
+    text-align: center;
+    margin: 1rem 0;
+  }
+  
+  .interest-label {
+    font-size: 20px; 
+    font-weight: bold;
+  }
+
+  .success-message input[type="checkbox"] {
+    accent-color: #16c79a;
+  }
+
+  .check-icon {
+    margin:0 auto;
+    display: flex;
+    animation: pop 0.4s ease-out;
+  }
+  
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .back-button-container {
+  text-align: left;
+  margin: 20px;
+}
+
+.back-button {
+  display: inline-block;
+  background-color: #16c79a;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #139e7f;
+}
+
+  
+  

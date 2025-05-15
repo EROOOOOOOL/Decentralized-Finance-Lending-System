@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="Homepage.css"/>
+  <title>Transaction History</title>
+</head>
+<body>
+  <div class="tab-container">
+    <button id="borrowerTab" class="tab active">Borrower</button>
+    <button id="lenderTab" class="tab">Lender</button>
+  </div>
+
+  <div class="history-container">
+    <h1>History</h1>
+    <div class="transactions" id="borrowerContent">
+      <div class="transaction"><span>1</span> Transaction No: 00000001 <span class="date">Date Created: 03/28/2025</span></div>
+      <div class="transaction"><span>2</span> Transaction No: 00000002 <span class="date">Date Created: 03/28/2025</span></div>
+      <div class="transaction"><span>3</span> Transaction No: 00000003 <span class="date">Date Created: 03/28/2025</span></div>
+    </div>
+
+    <div class="transactions hidden" id="lenderContent">
+      <div class="transaction"><span>1</span> Transaction No: 00000008 <span class="date">Date Created: 03/29/2025</span></div>
+      <div class="transaction"><span>2</span> Transaction No: 00000009 <span class="date">Date Created: 03/29/2025</span></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="logout" onclick="window.location.href='Login.html'">Logout</button>
+    <button class="create" id="createTransactionBtn">Create Transaction</button>
+  </div>
+  <script src="Homepage.js"></script>
+</body>
+</html>
