@@ -1,23 +1,22 @@
-In a Command Prompt, run Ganache CLI. The command is "ganache-cli --port 8545 --networkId 5777" (all small letters)
+In a Command Prompt, run Ganache CLI. The command is "ganache" (all small letters)
 
-Whenever you are updating the contract, you need to always delete the current build folder and compile the files.
-From the root folder, remove the existing build folder by using the command "rmdir /s /q build".
-Then run "truffle compile" to compile the contracts.
+You should be in the root folder of the project (terminal-defi-app)
+
+Whenever you update the contract, you need to always compile the files.
+Run "truffle compile" to compile the contracts.
 Then run "truffle migrate --reset" to run the migration scripts for the contract.
+After migrating, it should show some details like the contract address.
+You should look for the contract address (it is shown as this 0x000.....) and paste it in the .env file
 
-To interact with the contract directly, use Truffle Console. Use the command "truffle console" to launch Truffle Console.
+To install all dependencies, you need to run "npm install"
 
-Try to create a transaction using these commands. Do it in order and per line. Do not do it in one line.
+Run "npm start" to start using the system
 
-const accounts = await web3.eth.getAccounts();
-const loanManager = await LoanManager.deployed();
-await loanManager.requestLoan(100, 30, "Business", "Monthly", { from: accounts[0] });
+In registering an account, it requires a Eth Account and their Private Key. These can be found in the Ganache Terminal when you run it.
+NOTE: Use Private Key that has the same number with the Eth Account (you'll get what i mean once you start running Ganache)
 
-const basic = await loanManager.getLoanBasic(0);
-console.log(basic);
+You can look for your registered accounts and your created transaction in the website of Mongo Atlas (ininvite ko na kayo don paaccept nalang kung wala pa kayo doon). Just click "Cluster" and click the "Collections" tab.
 
-const text = await loanManager.getLoanText(0);
-console.log(text);
+Then try the system and look for bugs.
 
-For automated testing
-truffle test
+REMINDER: Whenever you restart your Ganache terminal, you need to delete your existing account because they are using the old Eth Account. You should register a new user with the new generated Eth Account and Private Key. (Try niyo na rin ayusin to na dapat gagana parin yung system kahit old account.)

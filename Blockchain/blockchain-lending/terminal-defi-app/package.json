@@ -1,0 +1,20 @@
+{
+    "name": "terminal-defi-app",
+    "version": "1.0.0",
+    "description": "DeFi Lending System Terminal Application",
+    "main": "index.js",
+    "scripts": {
+      "start": "node index.js",
+      "compile": "truffle compile",
+      "migrate": "truffle migrate",
+      "test": "truffle test"
+    },
+    "dependencies": {
+      "@truffle/contract": "^4.6.0",
+      "bcryptjs": "^2.4.3",
+      "dotenv": "^16.3.1",
+      "inquirer": "^8.2.6",
+      "mongoose": "^7.5.0",
+      "web3": "^1.10.0"
+    }
+  }
