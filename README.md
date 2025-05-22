@@ -20,3 +20,17 @@ You can look for your registered accounts and your created transaction in the we
 Then try the system and look for bugs.
 
 REMINDER: Whenever you restart your Ganache terminal, you need to delete your existing account because they are using the old Eth Account. You should register a new user with the new generated Eth Account and Private Key. (Try niyo na rin ayusin to na dapat gagana parin yung system kahit old account.)
+
+
+
+
+
+For Testing the system:
+
+In a Command Prompt, run Ganache CLI. The command is "ganache" (all small letters)
+
+After Ganache CLI is running,
+
+then on another terminal,  run "truffle test test/ComprehensiveLoanManager.test.js"
+
+This will automatically test the functionality, transaction, and the security of the system.
