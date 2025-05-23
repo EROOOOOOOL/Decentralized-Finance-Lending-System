@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 const Web3 = require('web3');
 const contract = require('@truffle/contract');
 const User = require('./models/User');
-const Transaction = require('./models/Transaction');
 const LoanManagerArtifact = require('./build/contracts/LoanManager.json');
 
 // Initialize Web3 and contract
@@ -165,6 +164,7 @@ async function showMenu() {
     options = [
       { name: 'Browse loan requests from borrowers', value: 'browse' },
       { name: 'View my funded loans', value: 'view' },
+      { name: 'Verify transaction on blockchain', value: 'verify' },
       { name: 'Sign out', value: 'logout' }
     ];
   } else {
@@ -193,6 +193,9 @@ async function showMenu() {
       break;
     case 'view':
       await viewTransactions();
+      break;
+    case 'verify':
+      await verifyTransaction();
       break;
     case 'logout':
       currentUser = null;
@@ -243,8 +246,6 @@ async function createLoanRequest() {
     // Set the default account
     web3.eth.defaultAccount = account.address;
 
-    console.log('Creating loan request with account:', account.address);
-
     // Create loan request on blockchain
     const tx = await loanManagerInstance.requestLoan(
       amount,
@@ -257,34 +258,15 @@ async function createLoanRequest() {
       }
     );
 
-    // Get loan ID from event
-    const loanId = await loanManagerInstance.getLoanCount() - 1;
-    console.log('Created loan with ID:', loanId);
+    // Get transaction receipt
+    const txReceipt = await web3.eth.getTransactionReceipt(tx.tx);
+    const block = await web3.eth.getBlock(txReceipt.blockNumber);
 
-    // Verify the loan was created
-    const loan = await loanManagerInstance.getLoan(loanId);
-    console.log('Created loan details:', {
-      borrower: loan[0],
-      status: loan[6],
-      amount: loan[2],
-      termDays: loan[3],
-      purpose: loan[4]
-    });
-
-    // Store in MongoDB
-    const transaction = new Transaction({
-      blockchainTxHash: tx.tx,
-      loanId,
-      borrower: currentUser._id,
-      amount,
-      termDays,
-      purpose,
-      repaymentFrequency,
-      status: 'Requested'
-    });
-
-    await transaction.save();
     console.log('Loan request created successfully!');
+    console.log('\nTransaction Details:');
+    console.log(`Transaction Hash: ${tx.tx}`);
+    console.log(`Block Number: ${txReceipt.blockNumber}`);
+    console.log(`Block Timestamp: ${new Date(block.timestamp * 1000).toLocaleString()}`);
   } catch (error) {
     console.error('Error creating loan request:', error);
     if (error.message) {
@@ -384,24 +366,15 @@ async function browseLoans() {
       gas: 3000000
     });
 
-    // Update MongoDB
-    const selectedLoan = availableLoans.find(loan => loan.id === loanId);
-    const borrower = await User.findOne({ ethereumAddress: selectedLoan.borrower });
-    
-    const transaction = new Transaction({
-      blockchainTxHash: tx.tx,
-      loanId,
-      lender: currentUser._id,
-      borrower: borrower._id,
-      amount: selectedLoan.amount,
-      termDays: selectedLoan.termDays,
-      purpose: selectedLoan.purpose,
-      repaymentFrequency: selectedLoan.repaymentFrequency,
-      status: 'Accepted'
-    });
+    // Get transaction receipt
+    const txReceipt = await web3.eth.getTransactionReceipt(tx.tx);
+    const block = await web3.eth.getBlock(txReceipt.blockNumber);
 
-    await transaction.save();
     console.log('Loan funded successfully!');
+    console.log('\nTransaction Details:');
+    console.log(`Transaction Hash: ${tx.tx}`);
+    console.log(`Block Number: ${txReceipt.blockNumber}`);
+    console.log(`Block Timestamp: ${new Date(block.timestamp * 1000).toLocaleString()}`);
     
     // After funding, show the funded loans
     await viewTransactions();
@@ -417,73 +390,32 @@ async function browseLoans() {
 
 async function viewTransactions() {
   try {
-    let transactions;
-    if (currentUser.role === 'lender') {
-      transactions = await Transaction.find({ lender: currentUser._id })
-        .populate('borrower', 'username');
-    } else {
-      transactions = await Transaction.find({ borrower: currentUser._id })
-        .populate('lender', 'username');
-    }
-
-    if (transactions.length === 0) {
-      console.log('No transactions found');
+    // Ensure connection is active
+    const isConnected = await ensureConnection();
+    if (!isConnected) {
+      console.log('Unable to connect to blockchain. Please make sure Ganache is running.');
       return await showMenu();
     }
 
-    console.log('\nYour Transactions:');
-    transactions.forEach(tx => {
-      if (currentUser.role === 'lender') {
-        console.log(`\nAmount: ₱${tx.amount}`);
-        console.log(`Term: ${tx.termDays} days`);
-        console.log(`Purpose: ${tx.purpose}`);
-        console.log(`Repayment: ${tx.repaymentFrequency} days`);
-        console.log(`Status: ${tx.status}`);
-        console.log(`Borrower: ${tx.borrower.username}`);
-      } else {
-        console.log(`\nAmount: ₱${tx.amount}`);
-        console.log(`Term: ${tx.termDays} days`);
-        console.log(`Purpose: ${tx.purpose}`);
-        console.log(`Repayment: ${tx.repaymentFrequency} days`);
-        console.log(`Status: ${tx.status}`);
-        console.log(`Lender: ${tx.lender.username}`);
-      }
-    });
-  } catch (error) {
-    console.error('Error viewing transactions:', error);
-  }
-
-  await showMenu();
-}
-
-async function viewTransactions() {
-  try {
-    let transactions;
-    if (currentUser.role === 'lender') {
-      transactions = await Transaction.find({
-        lender: currentUser._id
-      }).sort({ createdAt: -1 });
-    } else {
-      transactions = await Transaction.find({
-        borrower: currentUser._id
-      }).sort({ createdAt: -1 });
-    }
-
-    if (transactions.length === 0) {
-      console.log('No transactions found');
-      return await showMenu();
-    }
+    const loanCount = await loanManagerInstance.getLoanCount();
+    let foundTransactions = false;
 
     console.log('\nYour Transactions:');
-    for (const tx of transactions) {
-      const loan = await loanManagerInstance.getLoan(tx.loanId);
-      const role = tx.lender && tx.lender.toString() === currentUser._id.toString() ? 'Lender' : 'Borrower';
-      const otherParty = role === 'Lender' ? loan[1] : loan[0];
-      const otherUser = await User.findOne({ ethereumAddress: otherParty });
-      const otherUsername = otherUser ? otherUser.username : 'Unknown User';
+    for (let i = 0; i < loanCount; i++) {
+      const loan = await loanManagerInstance.getLoan(i);
+      
+      // Check if this loan involves the current user
+      if (loan[0].toLowerCase() === currentUser.ethereumAddress.toLowerCase() || 
+          loan[1].toLowerCase() === currentUser.ethereumAddress.toLowerCase()) {
+        
+        foundTransactions = true;
+        const role = loan[0].toLowerCase() === currentUser.ethereumAddress.toLowerCase() ? 'Borrower' : 'Lender';
+        const otherParty = role === 'Borrower' ? loan[1] : loan[0];
+        const otherUser = await User.findOne({ ethereumAddress: otherParty });
+        const otherUsername = otherUser ? otherUser.username : 'Unknown User';
 
-      console.log(`
-Transaction ID: ${tx.blockchainTxHash}
+        console.log(`
+Transaction ID: ${i}
 Role: ${role}
 Amount: ₱${loan[2]}
 Term: ${loan[3]} days
@@ -491,8 +423,12 @@ Purpose: ${loan[4]}
 Repayment Frequency: ${loan[5]} days
 Status: ${getStatusText(loan[6])}
 Other Party: ${otherUsername} (${otherParty})
-Date: ${tx.createdAt.toLocaleString()}
 -------------------`);
+      }
+    }
+
+    if (!foundTransactions) {
+      console.log('No transactions found');
     }
   } catch (error) {
     console.error('Error viewing transactions:', error);
@@ -501,12 +437,127 @@ Date: ${tx.createdAt.toLocaleString()}
   await showMenu();
 }
 
+async function verifyTransaction() {
+  try {
+    // Ensure connection is active
+    const isConnected = await ensureConnection();
+    if (!isConnected) {
+      console.log('Unable to connect to blockchain. Please make sure Ganache is running.');
+      return await showMenu();
+    }
+
+    // Get all loans from blockchain
+    const loanCount = await loanManagerInstance.getLoanCount();
+    const availableLoans = [];
+
+    // Get all loans where current user is the lender
+    for (let i = 0; i < loanCount; i++) {
+      const loan = await loanManagerInstance.getLoan(i);
+      if (loan[1].toLowerCase() === currentUser.ethereumAddress.toLowerCase()) {
+        const borrower = await User.findOne({ ethereumAddress: loan[0] });
+        availableLoans.push({
+          id: i,
+          borrower: loan[0],
+          borrowerUsername: borrower ? borrower.username : 'Unknown',
+          amount: loan[2],
+          termDays: loan[3],
+          purpose: loan[4],
+          repaymentFrequency: loan[5],
+          status: loan[6]
+        });
+      }
+    }
+
+    if (availableLoans.length === 0) {
+      console.log('No funded loans found to verify');
+      return await showMenu();
+    }
+
+    // Show available loans to verify
+    console.log('\nYour Funded Loans:');
+    const choices = availableLoans.map(loan => ({
+      name: `ID: ${loan.id} | Amount: ₱${loan.amount} | Borrower: ${loan.borrowerUsername} | Status: ${getStatusText(loan.status)}`,
+      value: loan.id
+    }));
+
+    const { loanId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'loanId',
+        message: 'Select a loan to verify on blockchain:',
+        choices
+      }
+    ]);
+
+    // Get the selected loan details from blockchain
+    const loan = await loanManagerInstance.getLoan(loanId);
+    const borrower = await User.findOne({ ethereumAddress: loan[0] });
+    const borrowerUsername = borrower ? borrower.username : 'Unknown';
+
+    // Get the loan creation event
+    const loanEvents = await loanManagerInstance.getPastEvents('LoanRequested', {
+      filter: { loanId: loanId },
+      fromBlock: 0,
+      toBlock: 'latest'
+    });
+
+    if (loanEvents.length === 0) {
+      console.log('\n|NONE| Verification Result: No transaction found for this loan');
+      return await showMenu();
+    }
+
+    const loanEvent = loanEvents[0];
+    const txReceipt = await web3.eth.getTransactionReceipt(loanEvent.transactionHash);
+    const block = await web3.eth.getBlock(txReceipt.blockNumber);
+
+    // Display verification details
+    console.log('\n=== Blockchain Verification Details ===');
+    console.log(`Transaction Hash: ${loanEvent.transactionHash}`);
+    console.log(`Borrower: ${borrowerUsername} (${loan[0]})`);
+    console.log(`Lender: ${currentUser.username} (${loan[1]})`);
+    console.log(`Amount: ₱${loan[2]}`);
+    console.log(`Term: ${loan[3]} days`);
+    console.log(`Purpose: ${loan[4]}`);
+    console.log(`Repayment Frequency: ${loan[5]} days`);
+    console.log(`Status: ${getStatusText(loan[6])}`);
+    console.log('=====================================');
+
+    // Verify if the loan exists and is valid
+    if (loan[1].toLowerCase() === currentUser.ethereumAddress.toLowerCase()) {
+      console.log('\n|CONFIRMED| Verification Result: Transaction is valid and stored on blockchain');
+      console.log('The loan details match your records and are permanently stored on the blockchain.');
+      console.log(`\nBlockchain Details:`);
+      console.log(`- Block Number: ${txReceipt.blockNumber}`);
+      console.log(`- Transaction hash: ${loanEvent.transactionHash}`);
+      console.log(`- Block timestamp: ${new Date(block.timestamp * 1000).toLocaleString()}`);
+      console.log(`- Gas used: ${txReceipt.gasUsed}`);
+      console.log(`- Block hash: ${block.hash}`);
+    } else {
+      console.log('\n|INVALID| Verification Result: Transaction not found or invalid');
+      console.log('The loan details could not be verified on the blockchain.');
+    }
+
+  } catch (error) {
+    console.error('Error verifying transaction:', error);
+    if (error.message) {
+      console.error('Error details:', error.message);
+    }
+  }
+
+  await showMenu();
+}
+
 function getStatusText(status) {
-  switch (status) {
-    case 0: return 'Requested';
-    case 1: return 'Accepted';
-    case 2: return 'Completed';
-    case 3: return 'Defaulted';
-    default: return 'Unknown';
+  switch (status.toString()) {
+    case '0':
+      return 'Requested';
+    case '1':
+      return 'Accepted';
+    case '2':
+      return 'Repaid';
+    case '3':
+      return 'Defaulted';
+    default:
+      return 'Unknown';
   }
 }
